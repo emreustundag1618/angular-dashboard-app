@@ -1,0 +1,17 @@
+<div class="pieChartBox">
+  <h1>Lead by Source</h1>
+  <div class="chart">
+    <!-- Here will be a pie chart -->
+  </div>
+  <div class="options">
+    @for (item of data; track item.name) {
+    <div class="option">
+      <div class="title">
+        <div class="dot" [style.backgroundColor]="item.color"></div>
+        <span>{{ item.name }}</span>
+      </div>
+      <span>{{ item.value }}</span>
+    </div>
+    }
+  </div>
+</div>

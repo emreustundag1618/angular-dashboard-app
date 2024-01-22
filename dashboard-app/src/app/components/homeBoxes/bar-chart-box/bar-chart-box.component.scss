@@ -1,0 +1,14 @@
+.barChartBox {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+
+    h1 {
+        font-size: 1.3rem;
+    }
+
+    .chart {
+        height: 10rem;
+        background-color: grey;
+    }
+}

@@ -1,0 +1,24 @@
+<div class="lineChartBox">
+  <div class="boxInfo">
+    <div class="title">
+      <img src="{{ data.icon }}" alt="" />
+      <span>{{ data.title }}</span>
+    </div>
+    <h1>{{ data.number }}</h1>
+    <a href="" [style.color]="data.color">View All</a>
+  </div>
+  <div class="chartInfo">
+    <div class="chart">
+      <!-- Here will be added lines from a chart lib -->
+    </div>
+    <div class="texts">
+      <div
+        class="percentage"
+        [style.color]="data.percentage > 0 ? 'limegreen' : 'tomato'"
+      >
+        {{ data.percentage }}%
+      </div>
+      <div class="duration">this month</div>
+    </div>
+  </div>
+</div>

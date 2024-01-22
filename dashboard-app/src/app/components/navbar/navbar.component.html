@@ -4,10 +4,16 @@
       mat-icon-button
       class="icon"
       aria-label="Example icon-button with menu icon"
+      [matMenuTriggerFor]="menu"
     >
       <mat-icon>menu</mat-icon>
     </button>
-    <span>NG Test Dashboard</span>
+    <mat-menu #menu="matMenu">
+      <app-menu></app-menu>
+    </mat-menu>
+
+
+    <span [routerLink]="['/']">NG Test Dashboard</span>
     <span class="spacer"></span>
     <button
       mat-icon-button

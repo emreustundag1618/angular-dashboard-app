@@ -1,0 +1,20 @@
+<div class="topBox">
+  <h1>Top Deals</h1>
+  <div class="userLists">
+    @for (user of topDealUsers; track user.id) {
+    <div class="userListItem">
+      <div class="user">
+        <img
+          src="{{ user.img }}"
+          alt=""
+        />
+        <div class="userTexts">
+          <span class="username">{{ user.username }}</span>
+          <span class="mail">{{ user.email }}</span>
+        </div>
+      </div>
+      <span class="amount">${{ user.amount }}</span>
+    </div>
+    }
+  </div>
+</div>

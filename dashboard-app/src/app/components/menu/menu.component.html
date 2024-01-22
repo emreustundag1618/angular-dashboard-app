@@ -1,1 +1,6 @@
-<p>menu works!</p>
+@for (item of menuItems; track item.id) {
+<button mat-menu-item [routerLink]="item.url">
+  <img src="{{ item.icon }}" alt="" />
+  <span>{{ item.name }}</span>
+</button>
+}
