@@ -1,1 +1,123 @@
-<p>users works!</p>
+<div class="users">
+  <h1>Users</h1>
+  <p>Here material angular table is used.</p>
+  <div class="mat-elevation-z8" *ngIf="userData.length > 0">
+    <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+      <!-- Checkbox Column -->
+      <ng-container matColumnDef="select">
+        <th mat-header-cell *matHeaderCellDef>
+          <mat-checkbox
+            (change)="$event ? toggleAllRows() : null"
+            [checked]="selection.hasValue() && isAllSelected()"
+            [indeterminate]="selection.hasValue() && !isAllSelected()"
+            [aria-label]="checkboxLabel()"
+          >
+          </mat-checkbox>
+        </th>
+        <td mat-cell *matCellDef="let row">
+          <mat-checkbox
+            (click)="$event.stopPropagation()"
+            (change)="$event ? selection.toggle(row) : null"
+            [checked]="selection.isSelected(row)"
+            [aria-label]="checkboxLabel(row)"
+          >
+          </mat-checkbox>
+        </td>
+      </ng-container>
+
+      <!-- Id Column -->
+      <ng-container matColumnDef="id">
+        <th mat-header-cell *matHeaderCellDef>ID</th>
+        <td mat-cell *matCellDef="let element">{{ element.id }}</td>
+      </ng-container>
+
+      <!-- Img Column -->
+      <ng-container matColumnDef="img">
+        <th mat-header-cell *matHeaderCellDef>Avatar</th>
+        <td mat-cell *matCellDef="let element">
+          <img [src]="element.img" alt="" />
+        </td>
+      </ng-container>
+
+      <!-- First name Column -->
+      <ng-container matColumnDef="firstName">
+        <th mat-header-cell *matHeaderCellDef>First name</th>
+        <td mat-cell *matCellDef="let element">{{ element.firstName }}</td>
+      </ng-container>
+
+      <!-- Last name Column -->
+      <ng-container matColumnDef="lastName">
+        <th mat-header-cell *matHeaderCellDef>Last name</th>
+        <td mat-cell *matCellDef="let element">{{ element.lastName }}</td>
+      </ng-container>
+
+      <!-- Email Column -->
+      <ng-container matColumnDef="email">
+        <th mat-header-cell *matHeaderCellDef>Email</th>
+        <td mat-cell *matCellDef="let element">{{ element.email }}</td>
+      </ng-container>
+
+      <!-- Phone Column -->
+      <ng-container matColumnDef="phone">
+        <th mat-header-cell *matHeaderCellDef>Phone</th>
+        <td mat-cell *matCellDef="let element">{{ element.phone }}</td>
+      </ng-container>
+
+      <!-- Created date Column -->
+      <ng-container matColumnDef="createdAt">
+        <th mat-header-cell *matHeaderCellDef>Created At</th>
+        <td mat-cell *matCellDef="let element">{{ element.createdAt }}</td>
+      </ng-container>
+
+      <!-- Verified Column -->
+      <ng-container matColumnDef="verified">
+        <th mat-header-cell *matHeaderCellDef>Verified</th>
+        <td mat-cell *matCellDef="let element">
+          <mat-icon
+            *ngIf="element.verified; else unverified"
+            aria-hidden="false"
+            aria-label="Check icon"
+            fontIcon="done"
+          ></mat-icon>
+          <ng-template #unverified>
+            <mat-icon
+              aria-hidden="false"
+              aria-label="Close icon"
+              fontIcon="close"
+            ></mat-icon
+          ></ng-template>
+        </td>
+      </ng-container>
+
+      <!-- Action column -->
+      <ng-container matColumnDef="action">
+        <th mat-header-cell *matHeaderCellDef aria-label="row actions">Action</th>
+        <td mat-cell *matCellDef="let element">
+          <div class="action">
+            <div class="view">
+              <a [routerLink]="['/users', element.id]">
+                <img src="../../../assets/view.svg" alt="">
+              </a>
+            </div>
+            <div class="delete">
+              <a>
+                <img src="../../../assets/delete.svg" alt="">
+              </a>
+            </div>
+          </div>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr
+        mat-row
+        *matRowDef="let row; columns: displayedColumns"
+        (click)="selection.toggle(row)"
+      ></tr>
+    </table>
+    <mat-paginator
+      [pageSizeOptions]="[5, 10, 25, 100]"
+      aria-label="Select page of users"
+    ></mat-paginator>
+  </div>
+</div>

@@ -1,0 +1,28 @@
+.users {
+  width: 90%;
+  margin: 0 auto;
+  padding-top: 20px;
+
+  table {
+    width: 100%;
+
+    img {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .action {
+      display: flex;
+      gap: 7px;
+
+      .view img, 
+      .delete img {
+        width: 24px;
+        height: 24px;
+        cursor: pointer;
+      }
+    }
+  }
+}

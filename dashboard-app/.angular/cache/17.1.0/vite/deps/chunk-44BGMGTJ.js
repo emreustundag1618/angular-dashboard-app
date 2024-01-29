@@ -283,6 +283,9 @@ function hasModifierKey(event, ...modifiers) {
 }
 
 // node_modules/@angular/cdk/fesm2022/coercion.mjs
+function coerceBooleanProperty(value) {
+  return value != null && `${value}` !== "false";
+}
 function coerceNumberProperty(value, fallbackValue = 0) {
   return _isNumberValue(value) ? Number(value) : fallbackValue;
 }
@@ -1258,6 +1261,17 @@ var ListKeyManager = class {
   /** Returns the items as an array. */
   _getItemsArray() {
     return this._items instanceof QueryList ? this._items.toArray() : this._items;
+  }
+};
+var ActiveDescendantKeyManager = class extends ListKeyManager {
+  setActiveItem(index) {
+    if (this.activeItem) {
+      this.activeItem.setInactiveStyles();
+    }
+    super.setActiveItem(index);
+    if (this.activeItem) {
+      this.activeItem.setActiveStyles();
+    }
   }
 };
 var FocusKeyManager = class extends ListKeyManager {
@@ -3124,6 +3138,62 @@ function _checkCdkVersionMatch() {
     console.warn("The Angular Material version (" + VERSION2.full + ") does not match the Angular CDK version (" + VERSION.full + ").\nPlease ensure the versions of these two packages exactly match.");
   }
 }
+var _ErrorStateTracker = class {
+  constructor(_defaultMatcher, ngControl, _parentFormGroup, _parentForm, _stateChanges) {
+    this._defaultMatcher = _defaultMatcher;
+    this.ngControl = ngControl;
+    this._parentFormGroup = _parentFormGroup;
+    this._parentForm = _parentForm;
+    this._stateChanges = _stateChanges;
+    this.errorState = false;
+  }
+  /** Updates the error state based on the provided error state matcher. */
+  updateErrorState() {
+    const oldState = this.errorState;
+    const parent = this._parentFormGroup || this._parentForm;
+    const matcher = this.matcher || this._defaultMatcher;
+    const control = this.ngControl ? this.ngControl.control : null;
+    const newState = typeof matcher?.isErrorState === "function" ? matcher.isErrorState(control, parent) : false;
+    if (newState !== oldState) {
+      this.errorState = newState;
+      this._stateChanges.next();
+    }
+  }
+};
+function mixinInitialized(base) {
+  return class extends base {
+    constructor(...args) {
+      super(...args);
+      this._isInitialized = false;
+      this._pendingSubscribers = [];
+      this.initialized = new Observable((subscriber) => {
+        if (this._isInitialized) {
+          this._notifySubscriber(subscriber);
+        } else {
+          this._pendingSubscribers.push(subscriber);
+        }
+      });
+    }
+    /**
+     * Marks the state as initialized and notifies pending subscribers. Should be called at the end
+     * of ngOnInit.
+     * @docs-private
+     */
+    _markInitialized() {
+      if (this._isInitialized && (typeof ngDevMode === "undefined" || ngDevMode)) {
+        throw Error("This directive has already been marked as initialized and should not be called twice.");
+      }
+      this._isInitialized = true;
+      this._pendingSubscribers.forEach(this._notifySubscriber);
+      this._pendingSubscribers = null;
+    }
+    /** Emits and completes the subscriber stream (should only emit once). */
+    _notifySubscriber(subscriber) {
+      subscriber.next();
+      subscriber.complete();
+    }
+  };
+}
 var MAT_DATE_LOCALE = new InjectionToken("MAT_DATE_LOCALE", {
   providedIn: "root",
   factory: MAT_DATE_LOCALE_FACTORY
@@ -4647,6 +4717,29 @@ var MatOption = _MatOption;
     }]
   });
 })();
+function _countGroupLabelsBeforeOption(optionIndex, options, optionGroups) {
+  if (optionGroups.length) {
+    let optionsArray = options.toArray();
+    let groups = optionGroups.toArray();
+    let groupCounter = 0;
+    for (let i = 0; i < optionIndex + 1; i++) {
+      if (optionsArray[i].group && optionsArray[i].group === groups[groupCounter]) {
+        groupCounter++;
+      }
+    }
+    return groupCounter;
+  }
+  return 0;
+}
+function _getOptionScrollPosition(optionOffset, optionHeight, currentScrollPosition, panelHeight) {
+  if (optionOffset < currentScrollPosition) {
+    return optionOffset;
+  }
+  if (optionOffset + optionHeight > currentScrollPosition + panelHeight) {
+    return Math.max(0, optionOffset - panelHeight + optionHeight);
+  }
+  return currentScrollPosition;
+}
 var _MatOptionModule = class _MatOptionModule {
 };
 _MatOptionModule.ɵfac = function MatOptionModule_Factory(t) {
@@ -4878,21 +4971,40 @@ export {
   UP_ARROW,
   RIGHT_ARROW,
   DOWN_ARROW,
+  A,
   hasModifierKey,
+  coerceBooleanProperty,
   coerceNumberProperty,
+  _isNumberValue,
   coerceArray,
   coerceCssPixelValue,
   coerceElement,
+  ObserversModule,
+  addAriaReferencedId,
+  removeAriaReferencedId,
+  AriaDescriber,
+  ActiveDescendantKeyManager,
   FocusKeyManager,
   isFakeMousedownFromScreenReader,
   isFakeTouchstartFromScreenReader,
+  LiveAnnouncer,
   FocusMonitor,
+  A11yModule,
   Directionality,
   BidiModule,
   MatCommonModule,
+  _ErrorStateTracker,
+  mixinInitialized,
+  ErrorStateMatcher,
   MatRipple,
   MatRippleModule,
+  MAT_OPTION_PARENT_COMPONENT,
+  MAT_OPTGROUP,
+  MatOption,
+  _countGroupLabelsBeforeOption,
+  _getOptionScrollPosition,
+  MatOptionModule,
   MatRippleLoader,
   _MatInternalFormField
 };
-//# sourceMappingURL=chunk-QB7KJ2BT.js.map
+//# sourceMappingURL=chunk-44BGMGTJ.js.map

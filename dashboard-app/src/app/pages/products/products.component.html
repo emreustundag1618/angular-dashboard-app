@@ -1,1 +1,117 @@
-<p>products works!</p>
+<div class="products">
+  <h1>Products</h1>
+  <p>Here is also material data table used</p>
+
+  <div class="products-table" *ngIf="productsData.length > 0">
+    <table
+      mat-table
+      [dataSource]="dataSource"
+      multiTemplateDataRows
+      class="mat-elevation-z8"
+    >
+      @for (column of columnsToDisplay; track column) {
+      <ng-container matColumnDef="{{ column }}">
+        <th mat-header-cell *matHeaderCellDef>{{ column }}</th>
+        <td mat-cell *matCellDef="let element">
+          <div [ngSwitch]="column">
+            <div *ngSwitchCase="'inStock'">
+              <mat-icon
+                *ngIf="element.inStock; else outOfStock"
+                aria-hidden="false"
+                aria-label="Check icon"
+                fontIcon="done"
+              ></mat-icon>
+              <ng-template #outOfStock>
+                <mat-icon
+                  aria-hidden="false"
+                  aria-label="Close icon"
+                  fontIcon="close"
+                ></mat-icon
+              ></ng-template>
+            </div>
+            <div *ngSwitchCase="'img'">
+              <img [src]="element.img" alt="" />
+            </div>
+            <div *ngSwitchDefault>{{ element[column] }}</div>
+          </div>
+        </td>
+      </ng-container>
+      }
+
+      <ng-container matColumnDef="expand">
+        <th mat-header-cell *matHeaderCellDef aria-label="row actions">
+          &nbsp;
+        </th>
+        <td mat-cell *matCellDef="let element">
+          <button
+            mat-icon-button
+            aria-label="expand row"
+            (click)="
+              expandedElement = expandedElement === element ? null : element;
+              $event.stopPropagation()
+            "
+          >
+            @if (expandedElement === element) {
+            <mat-icon>keyboard_arrow_up</mat-icon>
+            } @else {
+            <mat-icon>keyboard_arrow_down</mat-icon>
+            }
+          </button>
+        </td>
+      </ng-container>
+
+      <!-- Expanded Content Column - The detail row is made up of this one column that spans across all columns -->
+      <ng-container matColumnDef="expandedDetail">
+        <td
+          mat-cell
+          *matCellDef="let element"
+          [attr.colspan]="columnsToDisplayWithExpand.length"
+        >
+          <div
+            class="example-element-detail"
+            [@detailExpand]="
+              element == expandedElement ? 'expanded' : 'collapsed'
+            "
+          >
+            <div class="example-element-description">
+              <img [src]="element.img" alt="" />
+            </div>
+            <div class="example-element-diagram">
+              <div class="example-element-position">
+                <span class="boldy">ID:</span> {{ element.id }}
+              </div>
+              <div class="example-element-symbol">
+                <span class="boldy">Title:</span> {{ element.title }}
+              </div>
+              <div class="example-element-name">
+                <span class="boldy">Color:</span> {{ element.color }}
+              </div>
+              <div class="example-element-weight">
+                <span class="boldy">Producer:</span> {{ element.producer }}
+              </div>
+              <button [routerLink]="['/products', element.id]">Details</button>
+            </div>
+          </div>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="columnsToDisplayWithExpand"></tr>
+      <tr
+        mat-row
+        *matRowDef="let element; columns: columnsToDisplayWithExpand"
+        class="example-element-row"
+        [class.example-expanded-row]="expandedElement === element"
+        (click)="expandedElement = expandedElement === element ? null : element"
+      ></tr>
+      <tr
+        mat-row
+        *matRowDef="let row; columns: ['expandedDetail']"
+        class="example-detail-row"
+      ></tr>
+    </table>
+    <mat-paginator
+      [pageSizeOptions]="[5, 10, 25, 100]"
+      aria-label="Select page of users"
+    ></mat-paginator>
+  </div>
+</div>

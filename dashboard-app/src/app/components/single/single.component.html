@@ -1,0 +1,40 @@
+<div class="single">
+  <div class="view">
+    <div class="info">
+      <div class="topInfo">
+        @if (data.img) {
+        <img [src]="data.img" alt="" />
+        }
+        <h2>{{ data.title }}</h2>
+        <button>Update</button>
+      </div>
+      <div class="details">
+        @for (entry of entries; track entry) {
+        <div class="item">
+          <span class="itemTitle">{{ entry[0] }}</span>
+          <span class="itemValue">{{ entry[1] }}</span>
+        </div>
+        }
+      </div>
+      <hr />
+    </div>
+    <!-- Will be editted next time -->
+    <div class="chart">
+      <h3>Graph will be here</h3>
+    </div>
+  </div>
+  <div class="activities">
+    <h2>Latest Activities</h2>
+    <ul>
+      @if (data.activities) { @for (activity of data.activities; track activity)
+      {
+      <li>
+        <div>
+          <p>{{activity.text}}</p>
+          <time>{{activity.time}}</time>
+        </div>
+      </li>
+      } }
+    </ul>
+  </div>
+</div>

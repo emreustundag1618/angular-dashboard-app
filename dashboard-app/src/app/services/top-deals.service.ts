@@ -62,7 +62,7 @@ export class TopDealsService {
     return this.topDeals
   }
 
-  getTopDealById(id: number): TopDeal[] | any {
+  getTopDealById(id: number): TopDeal | undefined {
     return this.topDeals.find(topDeal => topDeal.id === id);
   }
 }
