@@ -2,7 +2,7 @@
   <h1>Users</h1>
   <p>Here material angular table is used.</p>
   <div class="mat-elevation-z8" *ngIf="userData.length > 0">
-    <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+    <table mat-table [dataSource]="userData" class="mat-elevation-z8">
       <!-- Checkbox Column -->
       <ng-container matColumnDef="select">
         <th mat-header-cell *matHeaderCellDef>

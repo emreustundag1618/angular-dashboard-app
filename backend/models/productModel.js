@@ -96,7 +96,7 @@ export let products = [
     price: "$599.99",
     createdAt: "01.02.2023",
     inStock: true,
-  },
+  }
 ];
 
 export function getProducts() {

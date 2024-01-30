@@ -18,7 +18,7 @@ import { RouterModule } from '@angular/router';
     MatPaginatorModule,
     MatIconModule,
     MatCheckboxModule,
-    RouterModule
+    RouterModule,
   ],
   templateUrl: './users.component.html',
   styleUrl: './users.component.scss',
@@ -34,16 +34,24 @@ export class UsersComponent implements AfterViewInit {
     'phone',
     'createdAt',
     'verified',
-    'action'
+    'action',
   ];
 
   userService: UserService = inject(UserService);
-  userData: User[] = this.userService.getUsers();
+  userData: User[] = [];
 
   dataSource = new MatTableDataSource<User>(this.userData);
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
+  constructor() {
+    this.userService.getUsers(1, 10, 'id', 'asc').subscribe((users) => {
+      console.log(users);
+      this.userData = users.currentItems;
+    });
+  }
+
+  // TODO: Here will be http pagination which is an advanced problem
   ngAfterViewInit() {
     this.dataSource.paginator = this.paginator;
   }

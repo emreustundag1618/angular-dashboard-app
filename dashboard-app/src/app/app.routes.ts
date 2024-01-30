@@ -4,6 +4,7 @@ import { UsersComponent } from './pages/users/users.component';
 import { ProductsComponent } from './pages/products/products.component';
 import { UserComponent } from './pages/user/user.component';
 import { ProductComponent } from './pages/product/product.component';
+import { TestComponent } from './test/test.component';
 
 export const routes: Routes = [
     {
@@ -30,6 +31,11 @@ export const routes: Routes = [
         path: 'products/:id',
         component: ProductComponent,
         title: 'Product page'
+    },
+    {
+        path: 'test',
+        component: TestComponent,
+        title: 'Test page'
     },
 
 ];
