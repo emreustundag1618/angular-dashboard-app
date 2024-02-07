@@ -3,6 +3,25 @@
   margin: 0 auto;
   padding-top: 20px;
 
+  .top {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    align-items: center;
+
+    h1 {
+      margin: 0;
+    }
+
+    button {
+      font-size: 14px;
+      padding: 10px;
+      border: 1px solid rgb(63, 63, 63);
+      border-radius: 5px;
+      cursor: pointer;
+    }
+  }
+
   table {
     width: 100%;
 
@@ -23,12 +42,10 @@
 
     tr.example-element-row:not(.example-expanded-row):hover {
       background: whitesmoke;
-      
     }
 
     tr.example-element-row:not(.example-expanded-row):active {
       background: #efefef;
-
     }
 
     .example-element-row td {

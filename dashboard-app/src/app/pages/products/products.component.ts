@@ -4,7 +4,6 @@ import { Product } from '../products/product.interface';
 import { ProductService } from '../../services/product.service';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { RouterModule } from '@angular/router';
-
 import {
   animate,
   state,
@@ -15,17 +14,29 @@ import {
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { MatSort, MatSortModule, SortDirection } from '@angular/material/sort';
+import {
+  catchError,
+  map,
+  merge,
+  of as observableOf,
+  startWith,
+  switchMap,
+} from 'rxjs';
 
 @Component({
   selector: 'app-product',
   standalone: true,
+  templateUrl: './products.component.html',
+  styleUrl: './products.component.scss',
   imports: [
     MatTableModule,
     MatButtonModule,
     MatIconModule,
     CommonModule,
     MatPaginatorModule,
-    RouterModule
+    RouterModule,
+    MatSortModule
   ],
   animations: [
     trigger('detailExpand', [
@@ -37,15 +48,13 @@ import { MatTableDataSource, MatTableModule } from '@angular/material/table';
       ),
     ]),
   ],
-  templateUrl: './products.component.html',
-  styleUrl: './products.component.scss',
+  
 })
 export class ProductsComponent {
   productService: ProductService = inject(ProductService);
-  productsData: Product[] = this.productService.getProducts();
+  productsData: Product[] = [];
 
   // dataSource = ELEMENT_DATA;
-  columnsToDisplayy = ['name', 'weight', 'symbol', 'position'];
   columnsToDisplay = [
     'id',
     'img',
@@ -58,13 +67,41 @@ export class ProductsComponent {
   ];
   columnsToDisplayWithExpand = [...this.columnsToDisplay, 'expand'];
   expandedElement: Product | null | undefined;
-
-  dataSource = new MatTableDataSource<Product>(this.productsData);
+  
+  resultsLength = 0;
+  isLoadingResults = true;
+  isRateLimitReached = false;
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild(MatSort) sort!: MatSort;
 
   ngAfterViewInit() {
-    this.dataSource.paginator = this.paginator;
 
+    merge(this.sort.sortChange, this.paginator.page).pipe(
+      startWith({}),
+      switchMap(() => {
+        // this.isLoadingResults = true;
+        return this.productService!.getProducts(
+          this.paginator.pageIndex + 1,
+          this.paginator.pageSize,
+          this.sort.active,
+          this.sort.direction
+        ).pipe(catchError(() => observableOf(null)));
+      }),
+      map((data) => {
+        // Flip flag to show that loading has finished.
+        this.isLoadingResults = false;
+        this.isRateLimitReached = data === null;
+
+        if (data === null) {
+          return [];
+        }
+
+        this.resultsLength = data.totalItems;
+        return data.currentItems;
+      })
+    ).subscribe((data) => {
+      this.productsData = data;
+    });
   }
 }

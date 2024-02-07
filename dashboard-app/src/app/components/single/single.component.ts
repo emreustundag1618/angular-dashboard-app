@@ -11,13 +11,12 @@ import { Observable } from 'rxjs';
   styleUrl: './single.component.scss',
 })
 export class SingleComponent {
-  @Input() data!: Observable<any>;
+  @Input() data!: Single;
   entries: string[][] | undefined;
 
   ngOnInit(): void {
     // In angular, @for block couldn't read Object.entries(...), so I used this
     console.log(this.data)
-    
     console.log(this.data);
   }
 

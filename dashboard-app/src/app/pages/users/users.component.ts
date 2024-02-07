@@ -8,9 +8,22 @@ import { User } from './user-interface';
 import { UserService } from '../../services/user.service';
 import { MatIconModule } from '@angular/material/icon';
 import { RouterModule } from '@angular/router';
+import { TestComponent } from '../../test/test.component';
+import { MatSort, MatSortModule, SortDirection } from '@angular/material/sort';
+import {
+  catchError,
+  map,
+  merge,
+  of as observableOf,
+  startWith,
+  switchMap,
+} from 'rxjs';
+import { CreateUserComponent } from '../../components/create/create-user/create-user.component';
 
 @Component({
   selector: 'app-users',
+  templateUrl: './users.component.html',
+  styleUrl: './users.component.scss',
   standalone: true,
   imports: [
     CommonModule,
@@ -19,13 +32,13 @@ import { RouterModule } from '@angular/router';
     MatIconModule,
     MatCheckboxModule,
     RouterModule,
+    TestComponent,
+    MatSortModule,
+    CreateUserComponent
   ],
-  templateUrl: './users.component.html',
-  styleUrl: './users.component.scss',
 })
 export class UsersComponent implements AfterViewInit {
   displayedColumns: string[] = [
-    'select',
     'id',
     'img',
     'firstName',
@@ -36,49 +49,63 @@ export class UsersComponent implements AfterViewInit {
     'verified',
     'action',
   ];
-
   userService: UserService = inject(UserService);
   userData: User[] = [];
 
-  dataSource = new MatTableDataSource<User>(this.userData);
+  resultsLength = 0;
+  isLoadingResults = true;
+  isRateLimitReached = false;
+
+  isModalActive: boolean = false;
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild(MatSort) sort!: MatSort;
 
-  constructor() {
-    this.userService.getUsers(1, 10, 'id', 'asc').subscribe((users) => {
-      console.log(users);
-      this.userData = users.currentItems;
+  constructor() {}
+  // TODO: Here will be http pagination which is an advanced problem
+  ngAfterViewInit() {
+
+    // console.log(this.paginator);
+    // console.log(this.sort);
+
+    merge(this.sort.sortChange, this.paginator.page).pipe(
+      startWith({}),
+      switchMap(() => {
+        // this.isLoadingResults = true;
+        return this.userService!.getUsers(
+          this.paginator.pageIndex + 1,
+          this.paginator.pageSize,
+          this.sort.active,
+          this.sort.direction
+        ).pipe(catchError(() => observableOf(null)));
+      }),
+      map((data) => {
+        // Flip flag to show that loading has finished.
+        this.isLoadingResults = false;
+        this.isRateLimitReached = data === null;
+
+        if (data === null) {
+          return [];
+        }
+
+        this.resultsLength = data.totalItems;
+        return data.currentItems;
+      })
+    ).subscribe((data) => {
+      this.userData = data;
+      
     });
   }
 
-  // TODO: Here will be http pagination which is an advanced problem
-  ngAfterViewInit() {
-    this.dataSource.paginator = this.paginator;
-  }
-  selection = new SelectionModel<User>(true, []);
-  /** Whether the number of selected elements matches the total number of rows. */
-  isAllSelected() {
-    const numSelected = this.selection.selected.length;
-    const numRows = this.dataSource.data.length;
-    return numSelected === numRows;
+  openModal() {
+    this.isModalActive = true;
   }
 
-  /** Selects all rows if they are not all selected; otherwise clear selection. */
-  toggleAllRows() {
-    if (this.isAllSelected()) {
-      this.selection.clear();
-      return;
-    }
-    this.selection.select(...this.dataSource.data);
+  closeModal() {
+    this.isModalActive = false;
   }
 
-  /** The label for the checkbox on the passed row */
-  checkboxLabel(row?: User): string {
-    if (!row) {
-      return `${this.isAllSelected() ? 'deselect' : 'select'} all`;
-    }
-    return `${this.selection.isSelected(row) ? 'deselect' : 'select'} row ${
-      row.id + 1
-    }`;
+  createUser(user: User) {
+    console.log(user)
   }
 }
