@@ -46,9 +46,13 @@ export class CreateUserComponent {
       verified: false,
     };
 
-    this.createUser.emit(user);
-    this.userForm.reset();
-    this.closeModal();
+    if (this.userForm.valid) {
+      this.createUser.emit(user);
+      this.userForm.reset();
+      this.closeModal();
+    } else {
+      console.error("Form is invalid please fill all required fields")
+    }
   }
 
   closeModal() {

@@ -37,7 +37,8 @@ export function getUserByIdController(req, res) {
 
 export function addUserController(req, res) {
   userModel.addUser(req.body);
-  res.json(userModel.getUsers());
+  // res.json(userModel.getUsers());
+  res.json(req.body);
 }
 
 export function deleteUserByIdController(req, res) {

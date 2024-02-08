@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { Observable, tap } from 'rxjs';
 import { userRows } from '../data';
 import { User } from '../pages/users/user-interface';
 import { singleUser } from '../data';
@@ -38,9 +38,22 @@ export class UserService {
   getSingleUser() {
     return singleUser;
   }
+
+  addUser(user: User): Observable<User> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type' : 'application/json',
+        'Authorization' : 'Token'
+      })
+    }
+    return this._httpClient.post<User>(this.baseUrl + '/users', user, httpOptions)
+    .pipe(
+      tap((data) => console.log(data))
+    );
+  }
 }
 
-export interface UserApi {
+interface UserApi {
   page: number;
   pageSize: number;
   totalItems: number;

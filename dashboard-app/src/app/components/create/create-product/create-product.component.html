@@ -1,1 +1,29 @@
-<p>create-product works!</p>
+<div class="createProduct" (click)="closeModal()">
+    <div class="modal" (click)="stopPropagation($event)">
+        <span class="close" (click)="closeModal()">X</span>
+        <h1>Add new product</h1>
+        <form [formGroup]="productForm" (ngSubmit)="onSubmit()">
+            <div class="item">
+                <label for="title">Title</label>
+                <input type="text" name="title" placeholder="Title" formControlName="title">
+            </div>
+            <div class="item">
+                <label for="color">Color</label>
+                <input type="text" name="color" placeholder="Color" formControlName="color">
+            </div>
+            <div class="item">
+                <label for="image">Image</label>
+                <input type="text" name="image" placeholder="Product Image Url" formControlName="image">
+            </div>
+            <div class="item">
+                <label for="producer">Producer</label>
+                <input type="text" name="producer" placeholder="Producer" formControlName="producer">
+            </div>
+            <div class="item">
+                <label for="price">Price</label>
+                <input type="text" name="price" placeholder="Price" formControlName="price">
+            </div>
+            <button type="submit">Add Product</button>
+        </form>
+    </div>
+</div>

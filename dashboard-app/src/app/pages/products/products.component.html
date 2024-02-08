@@ -1,7 +1,7 @@
 <div class="products">
   <div class="top">
     <h1>Products</h1>
-    <button>{{'+'}} Add New Product</button>
+    <button (click)="openModal()">{{'+'}} Add New Product</button>
   </div>
   
   <p>Here is also material data table used</p>
@@ -123,3 +123,5 @@
     ></mat-paginator>
   </div>
 </div>
+
+<app-create-product *ngIf="isModalActive" (createProduct)="createProduct($event)" (closeModalEvent)="closeModal()"></app-create-product>

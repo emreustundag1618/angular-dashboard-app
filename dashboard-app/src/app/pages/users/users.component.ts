@@ -106,6 +106,9 @@ export class UsersComponent implements AfterViewInit {
   }
 
   createUser(user: User) {
-    console.log(user)
+    this.userService.addUser(user).subscribe({
+      next: (data) => console.log('Data added succesfully: ', data),
+      error: (err) => console.error(err)
+    })
   }
 }

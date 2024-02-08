@@ -109,6 +109,7 @@ export function getProductById(id) {
 
 export function addProduct(newProduct) {
     products.unshift(newProduct);
+    // return newProduct;
     return getProducts();
 }
 

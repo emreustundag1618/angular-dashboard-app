@@ -23,6 +23,7 @@ import {
   startWith,
   switchMap,
 } from 'rxjs';
+import { CreateProductComponent } from '../../components/create/create-product/create-product.component';
 
 @Component({
   selector: 'app-product',
@@ -36,7 +37,8 @@ import {
     CommonModule,
     MatPaginatorModule,
     RouterModule,
-    MatSortModule
+    MatSortModule,
+    CreateProductComponent,
   ],
   animations: [
     trigger('detailExpand', [
@@ -48,7 +50,6 @@ import {
       ),
     ]),
   ],
-  
 })
 export class ProductsComponent {
   productService: ProductService = inject(ProductService);
@@ -67,41 +68,62 @@ export class ProductsComponent {
   ];
   columnsToDisplayWithExpand = [...this.columnsToDisplay, 'expand'];
   expandedElement: Product | null | undefined;
-  
+
   resultsLength = 0;
   isLoadingResults = true;
   isRateLimitReached = false;
+
+  isModalActive: boolean = false;
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
   ngAfterViewInit() {
+    merge(this.sort.sortChange, this.paginator.page)
+      .pipe(
+        startWith({}),
+        switchMap(() => {
+          // this.isLoadingResults = true;
+          return this.productService!.getProducts(
+            this.paginator.pageIndex + 1,
+            this.paginator.pageSize,
+            this.sort.active,
+            this.sort.direction
+          ).pipe(catchError(() => observableOf(null)));
+        }),
+        map((data) => {
+          // Flip flag to show that loading has finished.
+          this.isLoadingResults = false;
+          this.isRateLimitReached = data === null;
 
-    merge(this.sort.sortChange, this.paginator.page).pipe(
-      startWith({}),
-      switchMap(() => {
-        // this.isLoadingResults = true;
-        return this.productService!.getProducts(
-          this.paginator.pageIndex + 1,
-          this.paginator.pageSize,
-          this.sort.active,
-          this.sort.direction
-        ).pipe(catchError(() => observableOf(null)));
-      }),
-      map((data) => {
-        // Flip flag to show that loading has finished.
-        this.isLoadingResults = false;
-        this.isRateLimitReached = data === null;
+          if (data === null) {
+            return [];
+          }
 
-        if (data === null) {
-          return [];
-        }
+          this.resultsLength = data.totalItems;
+          return data.currentItems;
+        })
+      )
+      .subscribe((data) => {
+        this.productsData = data;
+      });
+  }
 
-        this.resultsLength = data.totalItems;
-        return data.currentItems;
-      })
-    ).subscribe((data) => {
-      this.productsData = data;
+  openModal(): void {
+    this.isModalActive = true;
+  }
+
+  closeModal(): void {
+    this.isModalActive = false;
+  }
+
+  createProduct(product: Product) {
+    // Here will be post req
+    this.productService.addProduct(product).subscribe({
+      next: (data) => {
+        console.log('Data added succesfully', data);
+      },
+      error: (err) => console.error(err)
     });
   }
 }

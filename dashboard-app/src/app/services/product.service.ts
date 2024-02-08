@@ -2,8 +2,8 @@ import { Injectable } from '@angular/core';
 import { Product } from '../pages/products/product.interface';
 import { products } from '../data';
 import { singleProduct } from '../data';
-import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { Observable, tap } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -38,9 +38,22 @@ readonly baseUrl = 'http://localhost:3030/api'
   getSingleProduct() {
     return singleProduct;
   }
+
+  addProduct(product: Product): Observable<Product> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type' : 'application/json',
+        'Authorization' : 'Token'
+      })
+    }
+    return this._httpClient.post<Product>(this.baseUrl + '/products', product, httpOptions)
+    .pipe(
+      tap((data) => console.log(data))
+    );
+  }
 }
 
-export interface ProductApi {
+interface ProductApi {
     page: number;
     pageSize: number;
     totalItems: number;

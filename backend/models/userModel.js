@@ -155,7 +155,7 @@ export function getUserById(id) {
 
 export function addUser(newUser) {
   users.unshift(newUser);
-  return getUsers();
+  return newUser;
 }
 
 export function deleteUserById(id) {
